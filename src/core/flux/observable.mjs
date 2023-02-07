@@ -33,8 +33,7 @@ export const observable = (storage) => {
       return target[state];
     },
     set(target, state, value) {
-      if (target[state] === value) return true;
-      if (JSON.stringify(target[state]) === JSON.stringify(value)) return true;
+      if (isEqual(target[state], value)) return true;
 
       target[state] = value;
       observers[state].forEach((handler) => handler());
@@ -42,4 +41,8 @@ export const observable = (storage) => {
       return true;
     },
   });
+};
+
+const isEqual = (oldValue, newValue) => {
+  return oldValue === newValue || JSON.stringify(oldValue) === JSON.stringify(newValue);
 };
