@@ -1,9 +1,20 @@
 let currentObserver = null;
+let isObserving = false;
 
 export const observe = (handler) => {
   currentObserver = handler;
+  isObserving = true;
 
-  // storage 사용하면 get trap 실행
+  // using storage inside this handler triggers get trap
+  handler();
+
+  currentObserver = null;
+  isObserving = false;
+};
+
+export const unobserve = (handler) => {
+  currentObserver = handler;
+
   handler();
 
   currentObserver = null;
@@ -16,7 +27,8 @@ export const observable = (storage) => {
 
   return new Proxy(storage, {
     get(target, state) {
-      if (currentObserver) observers[state].add(currentObserver);
+      if (currentObserver && isObserving) observers[state].add(currentObserver);
+      else if (currentObserver) observers[state].delete(currentObserver);
 
       return target[state];
     },
