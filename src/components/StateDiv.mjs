@@ -5,17 +5,17 @@ import { observe } from '../core/flux/observable.mjs';
 const { getState } = store;
 
 export default class HiButton extends Component {
-  setObservers() {
-    observe(() => {
-      getState().message;
-      this.render();
-    });
+  registerObservers() {
+    const observer = () => {
+      this.setState({ message: getState().message });
+    };
+    this.observers = [observer];
   }
 
   template() {
     return `
         🔎 getState().message
-        <span style="font-weight: bold;">${getState().message}</span>
+        <span style="font-weight: bold;">${this.state.message}</span>
         <br/>`;
   }
 }
